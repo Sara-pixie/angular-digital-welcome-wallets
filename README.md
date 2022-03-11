@@ -81,7 +81,35 @@ in component method:
     db.list('FORM').push(newFormInfo);
 ```
 
+## NgRx Store
+
+https://coursetro.com/posts/code/151/Angular-Ngrx-Store-Tutorial---Learn-Angular-State-Management
+
+1. Create an ACTION
+
+An action in Ngrx/store is two things:
+
+- A type in the form of a string. It describes what's happening.
+- It contains an optional payload of data.
+
+```
+    // Define the type of action (which is in the form of a string constant)
+    export const GET_STORES = 'GetStores';
+    ...
+
+    // Create a class for each action with a constructor that allows us to pass in the payload (not a required step, but it does provide you with strong typing)
+    export class GetStores implements Action {
+        readonly type: string = GET_STORES;
+        constructor(public payload: Store[]){}
+    }
+    ...
+
+    // We're exporting all of our action classes for use within our reducer
+    export type Actions = GetStores;
+```
+
 ## Added Dependencies
 
 - @angular/fire: ^7.2.1
 - firebase: ^9.6.8
+- @ngrx/store: ^13.0.2
