@@ -1,27 +1,87 @@
-# AngularDigitalWelcomeWallets
+# Angular Digital Welcome Wallets
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 13.1.2.
 
-## Development server
+## Connecting Angular app to Firebase
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+1. create [Firebase](https://console.firebase.google.com/) project
 
-## Code scaffolding
+2. create a realtime database
+   (useful info - [rules](https://firebase.google.com/docs/database/security/rules-conditions))
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+3. install packages in your project:
+   npm i firebase @angular/fire --save
+   (will also probably need to -> npm audit fix)
 
-## Build
+4. go to main page of your project in Firebase & click add WEB app
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+5. find Your web app's Firebase configuration info and copy it to both environments!
 
-## Running unit tests
+```
+    firebaseConfig: {
+        apiKey: "AIzaSyDKqRHuxd8a4GlD-oi20UE0Hlr4rz3wl5Y",
+        authDomain: "angular-digital-welcome-wallet.firebaseapp.com",
+        databaseURL: "https://angular-digital-welcome-wallet-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "angular-digital-welcome-wallet",
+        storageBucket: "angular-digital-welcome-wallet.appspot.com",
+        messagingSenderId: "573177592731",
+        appId: "1:573177592731:web:fdbfa1c7ebf948ffbcff3e"
+    }
+```
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+6. in AppModule imports array add:
+   [CRUD example setup](https://www.bezkoder.com/angular-13-firebase-crud/)
 
-## Running end-to-end tests
+```
+    import { AngularFireModule } from '@angular/fire/compat';
+    import { AngularFireDatabaseModule } from '@angular/fire/compat/database';
+    import { environment } from 'src/environments/environment';
+    ...
+    AngularFireModule.initializeApp(environment.firebaseConfig),
+    AngularFireDatabaseModule
+```
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+## How to get data from Fidebase DB
 
-## Further help
+https://firebase.google.com/docs/database/web/read-and-write
+in component import:
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+```
+    import { AngularFireDatabase } from '@angular/fire/compat/database';
+
+```
+
+in component constructor:
+
+```
+    constructor(db: AngularFireDatabase){
+        db.list<Store>('STORE').valueChanges().subscribe((stores: Store[]) => {
+            this.stores = stores;
+        });
+        db.list<Form>('FORM').valueChanges().subscribe((forms: Form[]) => {
+            this.forms = forms;
+        });
+    }
+```
+
+then in html:
+
+```
+    ...
+    *ngFor="let store of stores">
+    {{ store.name }}
+    ...
+```
+
+## How to push data to Firestore DB
+
+in component method:
+
+```
+    db.list('FORM').push(newFormInfo);
+```
+
+## Added Dependencies
+
+- @angular/fire: ^7.2.1
+- firebase: ^9.6.8
