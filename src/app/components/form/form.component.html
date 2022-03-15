@@ -4,6 +4,7 @@
             <div class="form-group">
                 <label for="storeName">Store name</label>
                 <select formControlName="store" id="storeName" class="userInput">
+                    <!-- later add "let store of stores | async"-->
                     <option *ngFor="let store of stores"
                     [ngValue]="store"> {{ store.storeName }} </option>
                 </select>

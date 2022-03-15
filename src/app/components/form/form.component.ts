@@ -2,9 +2,13 @@ import { formatDate } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { AngularFireDatabase } from '@angular/fire/compat/database';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Observable } from 'rxjs';
+import { Store as NgRxStore } from '@ngrx/store';
 
 import { FormInfo } from 'src/app/shared/models/formInfo.model';
 import { Store } from 'src/app/shared/models/store.model';
+import { AppState } from 'src/app/shared/store/app.state';
+import * as AppActions from '../../shared/store/app.actions';
 
 @Component({
   selector: 'app-form',
@@ -13,10 +17,17 @@ import { Store } from 'src/app/shared/models/store.model';
 })
 export class FormComponent implements OnInit {
   stores: Store[] = [];
+  xStores: Observable<Store[]>;
   chosenStore: Store | null = null;
   form!: FormGroup;
 
-  constructor(db: AngularFireDatabase) { 
+  constructor(db: AngularFireDatabase,
+              private ngRxStore: NgRxStore<AppState>) { 
+    this.xStores = ngRxStore.select('stores');
+    this.xStores.subscribe((stores)=>{
+      console.log("Stores (component):", stores);
+    });
+
     db.list<Store>('STORE').valueChanges().subscribe((stores: Store[]) => {
       this.stores = stores;
       this.chosenStore = this.stores[0];
@@ -60,7 +71,7 @@ export class FormComponent implements OnInit {
         'sportPackage': new FormControl(null, Validators.required),
         'monthlyCharge': new FormControl(null, [Validators.required, Validators.pattern(numberRegEx)]),
         'upfrontFee': new FormControl(null, [Validators.required, Validators.pattern(numberRegEx)]),
-        'installmentsOfPayment': new FormControl(1, Validators.required),
+        'installmentsOfPayment': new FormControl(null, Validators.required),
       }),
       'otherInfo': new FormControl(null, Validators.maxLength(50))
     });
@@ -94,6 +105,7 @@ export class FormComponent implements OnInit {
       totalPayment: this.calculateTotalPayment(),
       otherHandyInfo: this.form.get('otherInfo')?.value,
     }
+    this.ngRxStore.dispatch(new AppActions.AddFormInfo(formInfo));
     this.onResetForm();
   }
 

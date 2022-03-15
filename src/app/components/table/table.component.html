@@ -1,1 +1,27 @@
-<p>table works!</p>
+<table>
+    <caption><h3>User Inputs</h3></caption>
+    <tr>
+        <th>N</th>
+        <th>Store name</th>
+        <th>Date</th>
+        <th>Served by</th>
+        <th>Email</th>
+        <th>BT Broadbrend</th>
+        <th>BT TV Package</th>
+        <th>Sport package</th>
+        <th>Total payment</th>
+        <th>Other Handy Info</th>
+    </tr>
+    <tr *ngFor="let form of (allFormsInfo | async); let i = index">
+        <th>{{ i+1 }}</th>
+        <th>{{ form.storeName }}</th>
+        <th>{{ form.date }}</th>
+        <th>{{ form.servedBy }}</th>
+        <th>{{ form.email }}</th>
+        <th>{{ form.btBroadbrend }}</th>
+        <th>{{ form.btTvPackage }}</th>
+        <th>{{ form.sportPackage }}</th>
+        <th>{{ form.totalPayment }}</th>
+        <th>{{ form.otherHandyInfo }}</th>
+    </tr>
+</table>

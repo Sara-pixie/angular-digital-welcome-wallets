@@ -85,7 +85,9 @@ in component method:
 
 https://coursetro.com/posts/code/151/Angular-Ngrx-Store-Tutorial---Learn-Angular-State-Management
 
-1. Create an ACTION
+**npm install @ngrx/store**
+
+### Create an ACTION
 
 An action in Ngrx/store is two things:
 
@@ -98,14 +100,100 @@ An action in Ngrx/store is two things:
     ...
 
     // Create a class for each action with a constructor that allows us to pass in the payload (not a required step, but it does provide you with strong typing)
-    export class GetStores implements Action {
-        readonly type: string = GET_STORES;
-        constructor(public payload: Store[]){}
+    export class AddFormInfo implements Action {
+        readonly type: string = ADD_FORM_INFO;
+        constructor(public payload: FormInfo){}
     }
     ...
 
     // We're exporting all of our action classes for use within our reducer
-    export type Actions = GetStores;
+    export type Actions =
+        GetStores |
+        GetFormsInfo |
+        AddFormInfo;
+```
+
+### Define AppState
+
+```
+export interface AppState {
+  readonly stores: Store[];
+  readonly allFormsInfo: FormInfo[];
+}
+
+```
+
+### Create a REDUCER
+
+A reducer is what takes the incoming action and decides what to do with it. It takes the previous state and returns a new state based on the given action.
+
+```
+    // First import everything from your actions file and asign it an alias
+    import * as AppActions from './app.actions';
+```
+
+Then define your reducer. <br>
+It's a function that accepts 2 arguments: 1. **state** (which in this case is an array of FormInfo and has an assigned default of [] - that can be something else as well...) 2. **action** (make it dynamic by getting the exported types in your actions!)
+inside it make a **switch** function that checks the type of action being passed in (it comares them to those dynamic actions we referenced earlier) <br>
+Then specify what should happen in each case (there can be more logic before the return statement) and make sure the default option return the initial state (so that's why we have state: FormInfo[] = []).
+
+```
+    export function formInfoReducer(state: FormInfo[] = [], action: AppActions.Actions){
+    switch(action.type){
+        case AppActions.ADD_FORM_INFO:
+            return [...state, (action as AppActions.AddFormInfo).payload];
+        case AppActions.GET_FORMS_INFO:
+            return {...state};
+        default:
+            return state;
+    }
+}
+```
+
+connect a reducer (app.module.ts):
+
+```
+    import { StoreModule } from '@ngrx/store';
+    import { storesReducer } from './shared/store/stores.reducer';
+    import { formInfoReducer } from './shared/store/formInfo.reducer';
+    ...
+    @NgModule({
+        ...
+        imports: [
+            StoreModule.forRoot({
+                // key - same as in AppState!
+                // value - reducer name
+                stores: storesReducer,
+                allFormsInfo: formInfoReducer
+            })
+        ]
+        ...
+```
+
+Use the Reducer:
+
+```
+    import { Store } from '@ngrx/store';
+    import * as AppActions from '../../shared/store/app.actions';
+    ...
+    constructor(private store: Store<AppState>) {}
+    ...
+
+    // send info (DISPATCH)
+    // make sure to call 'new' AppActions.actionFunctionName(payload) !
+    const formInfo: FormInfo = { /*FormInfo object here*/ }
+    this.store.dispatch(new AppActions.AddFormInfo(formInfo));
+
+    ...
+
+    // get state info
+    // will create an Observable<type>
+    // call the store and then '.select' the part of AppState you're interested in - also see app.module.ts!
+    allFormsInfo: Observable<FormInfo[]>;
+    constructor(store: Store<AppState>) {
+        this.allFormsInfo = store.select('allFormsInfo');
+    }
+
 ```
 
 ## Added Dependencies
