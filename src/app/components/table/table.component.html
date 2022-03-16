@@ -13,15 +13,15 @@
         <th>Other Handy Info</th>
     </tr>
     <tr *ngFor="let form of (allFormsInfo | async); let i = index">
-        <th>{{ i+1 }}</th>
-        <th>{{ form.storeName }}</th>
-        <th>{{ form.date }}</th>
-        <th>{{ form.servedBy }}</th>
-        <th>{{ form.email }}</th>
-        <th>{{ form.btBroadbrend }}</th>
-        <th>{{ form.btTvPackage }}</th>
-        <th>{{ form.sportPackage }}</th>
-        <th>{{ form.totalPayment }}</th>
-        <th>{{ form.otherHandyInfo }}</th>
+        <td>{{ i+1 }}</td>
+        <td>{{ form.storeName }}</td>
+        <td>{{ form.date }}</td>
+        <td>{{ form.servedBy }}</td>
+        <td>{{ form.email }}</td>
+        <td>{{ form.btBroadbrend }}</td>
+        <td>{{ form.btTvPackage }}</td>
+        <td>{{ form.sportPackage }}</td>
+        <td>{{ form.totalPayment }}</td>
+        <td>{{ form.otherHandyInfo }}</td>
     </tr>
 </table>

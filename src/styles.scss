@@ -95,6 +95,10 @@ table {
   color: black;
   border: 1px solid black;
   border-collapse: collapse;
+  th {
+    background-color: #a0a0a0;
+    color: white;
+  }
   tr:nth-child(even) {
     background-color: var(--background-color);
   }
