@@ -106,6 +106,7 @@ in component method:
 https://coursetro.com/posts/code/151/Angular-Ngrx-Store-Tutorial---Learn-Angular-State-Management
 
 **npm install @ngrx/store**
+
 <br>(->Back To [Table of Contents](#table-of-contents))
 
 ### Create an ACTION
@@ -295,7 +296,8 @@ in app.module.ts:
 ```
 
 6. Then you can get the updated state from the component `this.stores = ngRxStore.select('stores');` as an observable
-   <br>(->Back To [Table of Contents](#table-of-contents))
+
+<br>(->Back To [Table of Contents](#table-of-contents))
 
 ### Creating SELECTORS
 
