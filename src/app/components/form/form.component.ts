@@ -1,36 +1,31 @@
 import { formatDate } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
-import { AngularFireDatabase } from '@angular/fire/compat/database';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { Store as NgRxStore } from '@ngrx/store';
 
 import { FormInfo } from 'src/app/shared/models/formInfo.model';
 import { Store } from 'src/app/shared/models/store.model';
 import { AppState } from 'src/app/shared/store/app.state';
 import * as AppActions from '../../shared/store/app.actions';
+import * as Selectors from '../../shared/store/app.selectors';
 
 @Component({
   selector: 'app-form',
   templateUrl: './form.component.html',
   styleUrls: ['./form.component.scss']
 })
-export class FormComponent implements OnInit {
-  stores: Store[] = [];
-  xStores: Observable<Store[]>;
+export class FormComponent implements OnInit, OnDestroy {
+  stores: Observable<Store[]>;
+  storesSubscription: Subscription;
   chosenStore: Store | null = null;
   form!: FormGroup;
 
-  constructor(db: AngularFireDatabase,
-              private ngRxStore: NgRxStore<AppState>) { 
-    this.xStores = ngRxStore.select('stores');
-    this.xStores.subscribe((stores)=>{
-      console.log("Stores (component):", stores);
-    });
-
-    db.list<Store>('STORE').valueChanges().subscribe((stores: Store[]) => {
-      this.stores = stores;
-      this.chosenStore = this.stores[0];
+  constructor(private ngRxStore: NgRxStore<AppState>) { 
+    this.ngRxStore.dispatch(new AppActions.GetStoresStart());
+    this.stores = ngRxStore.select(Selectors.allStores);
+    this.storesSubscription = this.stores.subscribe((stores)=>{
+      this.chosenStore = stores[0];
       this.form?.patchValue({
         'store': this.chosenStore
       });
@@ -83,7 +78,10 @@ export class FormComponent implements OnInit {
 
   onResetForm(){
     this.form.reset();
-    this.chosenStore = this.stores[0];
+    this.storesSubscription.add(
+      this.ngRxStore.select(Selectors.oneStoreInfo(0))
+        .subscribe((store)=> this.chosenStore = store)
+    );
     const currentDate = formatDate(new Date(), 'dd-MM-yyyy', 'en');
     this.form?.patchValue({
       'store': this.chosenStore,
@@ -105,7 +103,7 @@ export class FormComponent implements OnInit {
       totalPayment: this.calculateTotalPayment(),
       otherHandyInfo: this.form.get('otherInfo')?.value,
     }
-    this.ngRxStore.dispatch(new AppActions.AddFormInfo(formInfo));
+    this.ngRxStore.dispatch(new AppActions.AddFormInfoStart(formInfo));
     this.onResetForm();
   }
 
@@ -119,6 +117,10 @@ export class FormComponent implements OnInit {
 
   isFormValid(): boolean {
     return this.form.valid;
+  }
+  
+  ngOnDestroy(): void {
+    this.storesSubscription.unsubscribe();  
   }
 
 }

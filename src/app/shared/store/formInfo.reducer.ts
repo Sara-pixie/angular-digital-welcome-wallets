@@ -6,7 +6,7 @@ export function formInfoReducer(state: FormInfo[] = [], action: AppActions.Actio
         case AppActions.ADD_FORM_INFO:
             return [...state, (action as AppActions.AddFormInfo).payload];
         case AppActions.GET_FORMS_INFO:
-            return {...state};
+            return [...(action as AppActions.GetFormsInfo).payload];
         default:
             return state;
     }

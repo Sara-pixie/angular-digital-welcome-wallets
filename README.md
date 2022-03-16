@@ -108,7 +108,9 @@ An action in Ngrx/store is two things:
 
     // We're exporting all of our action classes for use within our reducer
     export type Actions =
+        GetStoresStart |
         GetStores |
+        GetFormsInfoStart |
         GetFormsInfo |
         AddFormInfo;
 ```
@@ -196,8 +198,131 @@ Use the Reducer:
 
 ```
 
+### Creating EFFECTS (HTTP)
+
+**npm install --save @ngrx/effects**
+
+in name.effects.ts:
+
+```
+    import { Actions, createEffect, ofType } from '@ngrx/effects';
+    import { catchError, map, switchMap } from 'rxjs';
+    import { AngularFireDatabase } from '@angular/fire/compat/database';
+    import * as AppActions from './app.actions';
+    ...
+    @Injectable() // so we can inject actions$ and db
+    export class AppEffects{
+        getAllStores = createEffect(() => {
+            return this.actions$.pipe(
+                // continue here only if the action(Observable) is of this type
+                // can add multiple actions if you want to run the same code for them!
+                // it's like a filter...
+                ofType(AppActions.GET_STORES_START),
+                // get new observable
+                switchMap(() =>{
+                    //get array of stores
+                    return this.db.list<Store>('STORE').valueChanges()
+                        // and trigger another action to save them to NgRx Store
+                        .pipe(
+                            map((stores: Store[]) => new AppActions.GetStores(stores)),
+                            // must return a non error observable so actions$ observable doesn't die!
+                            catchError(() => new AppActions.GetStoresError())
+                        );
+                })
+            )
+        });
+        ...more effects...
+        constructor(private actions$: Actions,
+                    private db: AngularFireDatabase){}
+    }
+```
+
+in app.module.ts:
+
+```
+    import { EffectsModule } from '@ngrx/effects';
+    ...
+    imports: [
+        EffectsModule.forRoot([AppEffects])
+    ]
+    ...
+```
+
+**New Flow:**
+
+1. `this.ngRxStore.dispatch(new AppActions.GetStoresStart());` in component
+2. because `GetStoresStart()` is 'registered in reducers it triggers the code for "getAllStores" effect
+3. "getAllStores" effect makes a call to DB to get stores info
+4. then it calls eithar `GetStoresError()` action or `GetStores(stores)` action
+5. `GetStores(stores)` action triggers a reducer which updated the "AppState":
+
+```
+    export function storesReducer(state: Store[] = [], action: AppActions.Actions){
+        switch(action.type){
+            case AppActions.GET_STORES:
+                return [...state, ...(action as AppActions.GetStores).payload];
+            default:
+                return state;
+        }
+    }
+```
+
+6. Then you can get the updated state from the component `this.stores = ngRxStore.select('stores');` as an observable
+
+### Creating SELECTORS
+
+Why Selectors?
+
+1. **Memoization** First of all, selectors created by `createSelector` are memorized, meaning that they won't be called unnecessarily unless the data in the store has changed. This provides an important performance boost
+2. **Easy composition** In functional programming, we can compose different simple, pure functions into more complex ones, thus making the code way more readable and the whole system more maintainable
+3. **Cleanliness** We can always easily find from where a particular state is coming, and debug/find issues with no hassle
+4. **Consistency** It is always a good idea to do certain things in a single, concise way
+
+There are some rules when creating selectors and states:
+
+1. Selectors must be pure functions
+2. Never keep derived state in a store
+3. Use the tools provided by NgRx, like
+
+- `createFeatureSelector` (allows us to get a top-level feature state property of the state tree simply by calling it out by its feature name)
+
+```
+    const storesFeature = createFeatureSelector<Store[]>('stores');
+    const formsInfoFeature = createFeatureSelector<FormInfo[]>('allFormsInfo');
+```
+
+- `createSelector` (can be used to select some data from the state based on several slices of the same state)
+
+```
+    export const allStores = createSelector(storesFeature, (state: Store[]) => state);
+    export const allFormsInfo = createSelector(formsInfoFeature, (state: FormInfo[]) => state);
+    export const oneStoreInfo = (index: number) => createSelector(storesFeature, (state: Store[]) => {
+        if(state.length > 0){
+            return state[index];
+        } else {
+            return null;
+        }
+    });
+```
+
+- and `Entity.getSelectors`
+
+4. Selectors should be short and do one thing for one result. If two parts of an app use some state in two different forms, don't try to bastardize the selector, but either create two selectors or create the next selector from the first one using `createSelector`. Another approach is to write selector factories.
+5. Try to always use named selectors
+
+**Use selectors**
+
+```
+    import * as Selectors from '../../shared/store/app.selectors';
+    ...
+    ngRxStore.select(Selectors.allStores).subscribe((stores) => console.log("All Stores:", stores));
+    ngRxStore.select(Selectors.allFormsInfo).subscribe((forms) => console.log("All FormsInfo:", forms));
+    ngRxStore.select(Selectors.oneStoreInfo(0)).subscribe((store) => console.log("First store:", store));
+```
+
 ## Added Dependencies
 
 - @angular/fire: ^7.2.1
 - firebase: ^9.6.8
 - @ngrx/store: ^13.0.2
+- @ngrx/effects: ^13.0.2
