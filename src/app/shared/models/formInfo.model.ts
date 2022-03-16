@@ -18,6 +18,6 @@ export class FormInfo{
         this.btTvPackage = object.btTvPackage;
         this.sportPackage = object.sportPackage;
         this.totalPayment = object.totalPayment;
-        this.otherHandyInfo = object.otherHandyInfo;
+        this.otherHandyInfo = object.otherHandyInfo ? object.otherHandyInfo : null;
     }
 }
