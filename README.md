@@ -55,7 +55,7 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
     AngularFireDatabaseModule
 ```
 
-->Back To [Table of Contents](#table-of-contents)
+<br>(->Back To [Table of Contents](#table-of-contents))
 
 ## How to get data from Fidebase DB
 
@@ -89,7 +89,7 @@ then in html:
     ...
 ```
 
-->Back To [Table of Contents](#table-of-contents)
+<br>(->Back To [Table of Contents](#table-of-contents))
 
 ## How to push data to Firestore DB
 
@@ -99,14 +99,14 @@ in component method:
     db.list('FORM').push(newFormInfo);
 ```
 
-->Back To [Table of Contents](#table-of-contents)
+<br>(->Back To [Table of Contents](#table-of-contents))
 
 ## NgRx Store
 
 https://coursetro.com/posts/code/151/Angular-Ngrx-Store-Tutorial---Learn-Angular-State-Management
 
 **npm install @ngrx/store**
-->Back To [Table of Contents](#table-of-contents)
+<br>(->Back To [Table of Contents](#table-of-contents))
 
 ### Create an ACTION
 
@@ -136,7 +136,7 @@ An action in Ngrx/store is two things:
         AddFormInfo;
 ```
 
-->Back To [Table of Contents](#table-of-contents)
+<br>(->Back To [Table of Contents](#table-of-contents))
 
 ### Define AppState
 
@@ -148,7 +148,7 @@ export interface AppState {
 
 ```
 
-->Back To [Table of Contents](#table-of-contents)
+<br>(->Back To [Table of Contents](#table-of-contents))
 
 ### Create a REDUCER
 
@@ -223,7 +223,7 @@ Use the Reducer:
 
 ```
 
-->Back To [Table of Contents](#table-of-contents)
+<br>(->Back To [Table of Contents](#table-of-contents))
 
 ### Creating EFFECTS (HTTP)
 
@@ -295,7 +295,7 @@ in app.module.ts:
 ```
 
 6. Then you can get the updated state from the component `this.stores = ngRxStore.select('stores');` as an observable
-   ->Back To [Table of Contents](#table-of-contents)
+   <br>(->Back To [Table of Contents](#table-of-contents))
 
 ### Creating SELECTORS
 
@@ -348,7 +348,7 @@ There are some rules when creating selectors and states:
     ngRxStore.select(Selectors.oneStoreInfo(0)).subscribe((store) => console.log("First store:", store));
 ```
 
-->Back To [Table of Contents](#table-of-contents)
+<br>(->Back To [Table of Contents](#table-of-contents))
 
 ## Added Dependencies
 
@@ -357,4 +357,4 @@ There are some rules when creating selectors and states:
 - @ngrx/store: ^13.0.2
 - @ngrx/effects: ^13.0.2
 
-->Back To [Table of Contents](#table-of-contents)
+<br>(->Back To [Table of Contents](#table-of-contents))
