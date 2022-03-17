@@ -1,5 +1,5 @@
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { catchError, map, switchMap } from 'rxjs';
+import { catchError, map, switchMap, tap } from 'rxjs';
 import { AngularFireDatabase } from '@angular/fire/compat/database';
 
 import * as AppActions from './app.actions';
@@ -25,10 +25,12 @@ export class AppEffects{
     getAllFormsInfo = createEffect(() => {
         return this.actions$.pipe(
             ofType(AppActions.GET_FORMS_INFO_START),
-            switchMap(() =>{
+            switchMap(() => {
+                this.db.list<FormInfo>('FORM').snapshotChanges()
+                    .pipe(tap((result: any) => console.log(result)));
                 return this.db.list<FormInfo>('FORM').valueChanges()
                     .pipe(
-                        map((formsInfo: FormInfo[]) => new AppActions.GetFormsInfo(formsInfo)),
+                        map((formsInfo: FormInfo[]) =>  new AppActions.GetFormsInfo(formsInfo)),
                         //catchError(() => new AppActions.GetFormsInfoError())
                     );
             })
@@ -39,8 +41,12 @@ export class AppEffects{
         return this.actions$.pipe(
             ofType(AppActions.ADD_FORM_INFO_START),
             map((newFormInfo: AppActions.AddFormInfo) =>{
-                this.db.list('FORM').push(newFormInfo.payload);
-                return new AppActions.AddFormInfo(newFormInfo.payload);
+                const ref = this.db.list('FORM').push(newFormInfo.payload);
+                const ID: string | undefined = ref.key ? ref.key : undefined;
+                const formWithId: FormInfo = {...newFormInfo.payload};
+                formWithId.id = ID;
+                this.db.object<FormInfo>('FORM/' + ID).update({'id': ID});
+                return new AppActions.AddFormInfo(formWithId);
             })
         )
     });

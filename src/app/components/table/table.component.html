@@ -1,7 +1,14 @@
 <table>
     <caption><h3>User Inputs</h3></caption>
     <tr>
-        <th>N</th>
+        <th>N / 
+        <span *ngIf="allFormsInfo.length > 0">
+            <input type="checkbox" 
+            [checked]="areAllChecked()" 
+            (change)="toggleSelectAll($event)" />
+            Select all
+        </span>
+        </th>
         <th>Store name</th>
         <th>Date</th>
         <th>Served by</th>
@@ -11,9 +18,16 @@
         <th>Sport package</th>
         <th>Total payment</th>
         <th>Other Handy Info</th>
+        <th>Edit</th>
     </tr>
-    <tr *ngFor="let form of (allFormsInfo | async); let i = index">
-        <td>{{ i+1 }}</td>
+    <tr *ngFor="let form of allForms let i = index" 
+        [ngClass]="form.isSelected ? 'selected' : ''">
+        <td>
+            <input type="checkbox" 
+            [checked]="isThisChecked(form.id)"
+            (change)="toggleSelectThis($event, form.id)"/> 
+            {{ i+1 }}
+        </td>
         <td>{{ form.storeName }}</td>
         <td>{{ form.date }}</td>
         <td>{{ form.servedBy }}</td>
@@ -23,5 +37,9 @@
         <td>{{ form.sportPackage }}</td>
         <td>{{ form.totalPayment }}</td>
         <td>{{ form.otherHandyInfo }}</td>
+        <td><button type="button" class="info" (click)="onEdit(form.id)">
+            <fa-icon [icon]="faPenToSquare"></fa-icon>
+        </button></td>
     </tr>
 </table>
+<button type="button" class="danger" (click)="onDelete()">Delete Selected</button>

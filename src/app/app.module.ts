@@ -13,6 +13,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { storesReducer } from './shared/store/stores.reducer';
 import { formInfoReducer } from './shared/store/formInfo.reducer';
 import { AppEffects } from './shared/store/app.effects';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @NgModule({
   declarations: [
@@ -29,7 +30,8 @@ import { AppEffects } from './shared/store/app.effects';
       allFormsInfo: formInfoReducer
     }),
     EffectsModule.forRoot([AppEffects]),
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    FontAwesomeModule
   ],
   providers: [],
   bootstrap: [AppComponent]

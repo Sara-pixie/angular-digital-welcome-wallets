@@ -1,4 +1,5 @@
 export class FormInfo{
+    public id?: string;
     public storeName: string;
 	public date: string;
 	public servedBy: string;
@@ -10,6 +11,7 @@ export class FormInfo{
 	public otherHandyInfo: string;
 
     constructor(object?: any){
+        this.id = object.id ? object.id : null;
         this.storeName = object.storeName;
         this.date = object.date;
         this.servedBy = object.servedBy;

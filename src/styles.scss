@@ -3,6 +3,8 @@
   --gray-color: #dad8d8;
   --button-color: #a0a0a0;
   --button-border: 1px solid #808080;
+  --danger-color: rgb(180, 41, 41);
+  --info-color: rgb(70, 70, 172);
 }
 
 *,
@@ -43,6 +45,23 @@ body {
       width: 50%;
     }
   }
+}
+
+button {
+  padding: 10px 15px;
+  margin: 10px;
+  border-radius: 20px;
+  border: var(--button-border);
+  background-color: var(--button-color);
+  &.danger {
+    background-color: var(--danger-color);
+  }
+  &.info {
+    background-color: var(--info-color);
+  }
+}
+button:hover {
+  cursor: pointer;
 }
 
 .form {

@@ -358,5 +358,8 @@ There are some rules when creating selectors and states:
 - firebase: ^9.6.8
 - @ngrx/store: ^13.0.2
 - @ngrx/effects: ^13.0.2
+- @fortawesome/angular-fontawesome: ^0.10.1
+- @fortawesome/fontawesome-svg-core: ^6.1.0
+- @fortawesome/free-solid-svg-icons: ^6.1.0
 
 <br>(->Back To [Table of Contents](#table-of-contents))

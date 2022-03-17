@@ -80,7 +80,7 @@ export class FormComponent implements OnInit, OnDestroy {
     this.form.reset();
     this.storesSubscription.add(
       this.ngRxStore.select(Selectors.oneStoreInfo(0))
-        .subscribe((store)=> this.chosenStore = store)
+        .subscribe(store => this.chosenStore = store)
     );
     const currentDate = formatDate(new Date(), 'dd-MM-yyyy', 'en');
     this.form?.patchValue({
@@ -111,7 +111,7 @@ export class FormComponent implements OnInit, OnDestroy {
     const upfrontFee: number = this.form.get('packagePaymentInfo.upfrontFee')?.value;
     const monthlyCharge: number = this.form.get('packagePaymentInfo.monthlyCharge')?.value;
     const installmentsOfPayment: number = this.form.get('packagePaymentInfo.installmentsOfPayment')?.value;
-    const totalPayment: number = upfrontFee + (monthlyCharge*installmentsOfPayment)
+    const totalPayment: number = +upfrontFee + +(monthlyCharge*installmentsOfPayment);
     return totalPayment;
   }
 
